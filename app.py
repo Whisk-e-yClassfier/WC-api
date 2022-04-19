@@ -68,7 +68,7 @@ class HealthCheck(Resource):
     def post(self):
         args = upload_parser.parse_args()
         uploaded = args['file']
-        filename = datetime.datetime.now().isoformat()
+        filename = datetime.datetime.now().strftime("%Y_%d_%m__%H_%M_%S_%f.png")
         img_path = f'{UPLOAD_DIR}/{filename}'
         img_path_out = f'{OUTPUT_DIR}/{filename}'
         uploaded.save(img_path)
@@ -77,4 +77,4 @@ class HealthCheck(Resource):
         matplotlib.pyplot.switch_backend('Agg')
         model.show_result(img_path, result, show=False,
                           score_thr=0.5, out_file=img_path_out)
-        return send_from_directory(OUTPUT_DIR, uploaded.filename, as_attachment=False)
+        return send_from_directory(OUTPUT_DIR, filename, as_attachment=False)
