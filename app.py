@@ -5,6 +5,7 @@ import matplotlib
 
 from flask_restx import Api, Resource
 from werkzeug.datastructures import FileStorage
+import datetime
 
 app = Flask(__name__)
 api = Api(app)
@@ -67,8 +68,9 @@ class HealthCheck(Resource):
     def post(self):
         args = upload_parser.parse_args()
         uploaded = args['file']
-        img_path = f'{UPLOAD_DIR}/{uploaded.filename}'
-        img_path_out = f'{OUTPUT_DIR}/{uploaded.filename}'
+        filename = datetime.datetime.now().isoformat()
+        img_path = f'{UPLOAD_DIR}/{filename}'
+        img_path_out = f'{OUTPUT_DIR}/{filename}'
         uploaded.save(img_path)
 
         result = inference_detector(model, img_path)

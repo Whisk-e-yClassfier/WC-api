@@ -20,4 +20,4 @@ venv
 docs.zip
 archive.zip
 *.ipynb
-.pth
+*.pth
