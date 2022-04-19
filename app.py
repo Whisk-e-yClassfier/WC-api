@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask
 
 from mmdet.apis import init_detector, inference_detector
 import matplotlib
@@ -6,8 +6,11 @@ import matplotlib
 from flask_restx import Api, Resource
 from werkzeug.datastructures import FileStorage
 import datetime
+from flask_cors import CORS
+from S3Client import s3_connection
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 upload_parser = api.parser()
 upload_parser.add_argument('file', location='files',
@@ -46,6 +49,7 @@ model.CLASSES = ('Aberfeldy 12',
 
 UPLOAD_DIR = "./files"
 OUTPUT_DIR = "./files/out"
+s3_client = s3_connection()
 
 
 @api.route('/health')
@@ -57,14 +61,6 @@ class HealthCheck(Resource):
 @api.route('/image')
 @api.expect(upload_parser)
 class HealthCheck(Resource):
-    def get(self):
-        img = './balvenie_test.jpg'
-        result = inference_detector(model, img)
-        matplotlib.pyplot.switch_backend('Agg')
-        model.show_result(img, result, show=False, score_thr=0.5,
-                          out_file="balvenie_test_o.png")
-        return {"data": "balvenie_test_o.png"}
-
     def post(self):
         args = upload_parser.parse_args()
         uploaded = args['file']
@@ -77,4 +73,7 @@ class HealthCheck(Resource):
         matplotlib.pyplot.switch_backend('Agg')
         model.show_result(img_path, result, show=False,
                           score_thr=0.5, out_file=img_path_out)
-        return send_from_directory(OUTPUT_DIR, filename, as_attachment=False)
+        s3_client.upload_file(
+            img_path_out, "your-bucket", f"wc/wc_{filename}")
+        s3_url = f"your-s3-path/wc/wc_{filename}"
+        return {"status": "success", "image_url": s3_url}  # response added
