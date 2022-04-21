@@ -177,7 +177,7 @@ model = dict(
             nms=dict(type='nms', iou_threshold=0.7),
             min_bbox_size=0),
         rcnn=dict(
-            score_thr=0.15,
+            score_thr=0.1,
             nms=dict(type='nms', iou_threshold=0.5),
             max_per_img=7)))
 dataset_type = 'CocoDataset'
@@ -227,11 +227,10 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=[(384, 384),(512, 512)],
-        flip=True,
+        img_scale=(384, 384),
+        flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
-            dict(type='RandomFlip', flip_ratio=0.5),
             dict(type='Normalize',**img_norm_cfg),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img'])
@@ -242,8 +241,8 @@ data = dict(
     workers_per_gpu=0,
     train=dict(
         type='CocoDataset',
-        ann_file='dataset_512/train.json',
-        img_prefix='dataset_512/',
+        ann_file='dataset/train.json',
+        img_prefix='dataset/',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -300,17 +299,16 @@ data = dict(
         data_root='/userhome/cs/u3544547/mmdetection/project/'),
     val=dict(
         type='CocoDataset',
-        ann_file='dataset_512/test.json',
-        img_prefix='dataset_512/',
+        ann_file='dataset/test.json',
+        img_prefix='dataset/',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
-                img_scale=[(384, 384),(512, 512)],
-                flip=True,
+                img_scale=(384, 384),
+                flip=False,
                 transforms=[
-                    dict(type='Resize', keep_ratio=True),
-                    dict(type='RandomFlip'),
+                    dict(type='Resize', keep_ratio=True)
                     dict(type='Normalize',**img_norm_cfg),
                     dict(type='ImageToTensor', keys=['img']),
                     dict(type='Collect', keys=['img'])
@@ -328,17 +326,16 @@ data = dict(
         data_root='/userhome/cs/u3544547/mmdetection/project/'),
     test=dict(
         type='CocoDataset',
-        ann_file='dataset_512/test.json',
-        img_prefix='dataset_512/',
+        ann_file='dataset/test.json',
+        img_prefix='dataset/',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
-                img_scale=[(384, 384),(512, 512)],
-                flip=True,
+                img_scale=(384, 384),
+                flip=False,
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
-                    dict(type='RandomFlip'),
                     dict(type='Normalize',**img_norm_cfg),
                     dict(type='ImageToTensor', keys=['img']),
                     dict(type='Collect', keys=['img'])
